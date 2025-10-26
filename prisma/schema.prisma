@@ -14,9 +14,136 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  PRAKTIKAN
+  ASISTEN
+}
+
+enum StatusPermohonan {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum StatusTugasAwal {
+  BELUM_SUBMIT
+  SUDAH_SUBMIT
+  TERLAMBAT
+}
+
+enum StatusPresensi {
+  HADIR
+  TIDAK_HADIR
+  TERLAMBAT
+}
+
+enum StatusPeminjamanAlat {
+  PENDING
+  APPROVED
+  REJECTED
+  DIKEMBALIKAN
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
+  id              Int                 @id @default(autoincrement())
+  email           String              @unique
+  password        String
+  role            UserRole            @default(PRAKTIKAN)
+  createdAt       DateTime            @default(now())
+  permohonan      Permohonan[]
+  tugasAwal       TugasAwal[]
+  presensi        Presensi[]
+  peminjamanAlat  PeminjamanAlat[]
+}
+
+model Permohonan {
+  id            Int               @id @default(autoincrement())
+  nama          String
+  nim           String
+  email         String
+  tanggal       DateTime
+  waktuMulai    String
+  waktuSelesai  String
+  keperluan     String
+  jumlahOrang   String
+  status        StatusPermohonan  @default(PENDING)
+  userId        Int
+  user          User              @relation(fields: [userId], references: [id])
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  approvedBy    String?           // Email asisten yang approve
+  approvedAt    DateTime?
+  keterangan    String?           // Keterangan dari asisten
+}
+
+model TugasAwal {
+  id          Int               @id @default(autoincrement())
+  userId      Int
+  user        User              @relation(fields: [userId], references: [id])
+  modulId     String            // e.g., "ptb1-modul1", "ptb1-modul2", etc.
+  nama        String
+  nim         String
+  linkTugas   String            // Link ke Google Drive/OneDrive/etc
+  status      StatusTugasAwal   @default(BELUM_SUBMIT)
+  submitAt    DateTime?
+  nilai       Float?            // Nilai tugas (0-100)
+  nilaiAt     DateTime?         // Kapan dinilai
+  nilaiBy     String?           // Email asisten yang menilai
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  keterangan  String?           // Keterangan dari asisten
+  
+  @@unique([userId, modulId])   // Satu user hanya bisa submit satu kali per modul
+}
+
+model Presensi {
+  id          Int             @id @default(autoincrement())
+  userId      Int
+  user        User            @relation(fields: [userId], references: [id])
+  modulId     String          // e.g., "ptb1-modul1", "ptb1-modul2", etc.
+  nama        String
+  nim         String
+  kelompok    String          // A, B, C, D
+  status      StatusPresensi  @default(TIDAK_HADIR)
+  waktuPresensi DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  keterangan  String?         // Keterangan tambahan
+  
+  @@unique([userId, modulId])   // Satu user hanya bisa presensi satu kali per modul
+}
+
+model Alat {
+  id              Int                 @id @default(autoincrement())
+  nama            String              @unique
+  deskripsi       String
+  gambar          String              // Path ke gambar di public folder
+  jumlahTotal     Int                 // Total alat yang tersedia
+  jumlahTersedia  Int                 // Alat yang sedang tersedia (tidak dipinjam)
+  spesifikasi     String?             // Detail spesifikasi alat
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  peminjamanAlat  PeminjamanAlat[]
+}
+
+model PeminjamanAlat {
+  id            Int                   @id @default(autoincrement())
+  userId        Int
+  user          User                  @relation(fields: [userId], references: [id])
+  alatId        Int
+  alat          Alat                  @relation(fields: [alatId], references: [id])
+  nama          String
+  nim           String
+  email         String
+  tanggalPinjam DateTime
+  tanggalKembali DateTime
+  keperluan     String
+  jumlahPinjam  Int                   @default(1)
+  status        StatusPeminjamanAlat  @default(PENDING)
+  approvedBy    String?               // Email asisten yang approve
+  approvedAt    DateTime?
+  keterangan    String?               // Keterangan dari asisten
+  dikembalikanAt DateTime?            // Kapan alat dikembalikan
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
 }

@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion } from "framer-motion";
 
 export default function Navbar({ onLoginClick }: { onLoginClick: () => void }) {
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -39,10 +41,38 @@ export default function Navbar({ onLoginClick }: { onLoginClick: () => void }) {
 
         {/* NAVIGATION (desktop only) */}
         <nav className="hidden lg:flex space-x-10 font-semibold text-sm items-center">
-          <a href="#" className="hover:opacity-70 transition-opacity">Peminjaman Lab</a>
-          <a href="#" className="hover:opacity-70 transition-opacity">Peminjaman Alat</a>
-          <a href="#" className="hover:opacity-70 transition-opacity">Praktikum</a>
-          <a href="#" className="hover:opacity-70 transition-opacity">Aturan Lab</a>
+          <motion.button
+            onClick={onLoginClick}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="hover:opacity-70 transition-opacity cursor-pointer"
+          >
+            Peminjaman Lab
+          </motion.button>
+          <motion.button
+            onClick={onLoginClick}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="hover:opacity-70 transition-opacity cursor-pointer"
+          >
+            Peminjaman Alat
+          </motion.button>
+          <motion.button
+            onClick={onLoginClick}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="hover:opacity-70 transition-opacity cursor-pointer"
+          >
+            Praktikum
+          </motion.button>
+          <motion.button
+            onClick={onLoginClick}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="hover:opacity-70 transition-opacity cursor-pointer"
+          >
+            Aturan Lab
+          </motion.button>
           <motion.button
             onClick={onLoginClick}
             whileHover={{ scale: 1.1 }}
@@ -87,15 +117,22 @@ export default function Navbar({ onLoginClick }: { onLoginClick: () => void }) {
               />
             </motion.div>
           </motion.button>
-          <Image
-            src={scrolled ? '/DetailsBlack.png' : '/DetailsWhite.png'}
-            alt="Menu Icon"
-            width={26}
-            height={26}
-            className={`cursor-pointer transition-colors ${
-              scrolled ? 'text-black' : 'text-white'
-            }`}
-          />
+          <motion.button
+            onClick={onLoginClick}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="transition-colors"
+          >
+            <Image
+              src={scrolled ? '/DetailsBlack.png' : '/DetailsWhite.png'}
+              alt="Menu Icon"
+              width={26}
+              height={26}
+              className={`transition-colors ${
+                scrolled ? 'text-black' : 'text-white'
+              }`}
+            />
+          </motion.button>
         </div>
 
       </div>

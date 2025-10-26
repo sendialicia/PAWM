@@ -1,4 +1,4 @@
-1import Image from 'next/image';
+import Image from 'next/image';
 export default function Footer() {
   return (
     <main className="min-h-screen flex flex-col">

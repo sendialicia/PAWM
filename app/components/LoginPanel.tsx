@@ -7,9 +7,10 @@ import { useState } from "react";
 interface LoginPanelProps {
   isOpen: boolean;
   onClose: () => void;
+  onLoginSuccess: (userData: { id: number; email: string; role: string }) => void;
 }
 
-export default function LoginPanel({ isOpen, onClose }: LoginPanelProps) {
+export default function LoginPanel({ isOpen, onClose, onLoginSuccess }: LoginPanelProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -36,9 +37,9 @@ export default function LoginPanel({ isOpen, onClose }: LoginPanelProps) {
       if (response.ok) {
         setSuccess('Login successful!');
         console.log('User logged in:', data.user);
-        // You can add redirect logic here or update global state
+        // Call onLoginSuccess with user data
         setTimeout(() => {
-          onClose();
+          onLoginSuccess(data.user);
         }, 1500);
       } else {
         setError(data.error || 'Login failed');

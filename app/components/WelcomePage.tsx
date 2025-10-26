@@ -1,14 +1,30 @@
 "use client";
+
 import Image from "next/image";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
+import NavbarWithLogout from "./NavbarWithLogout";
 
-export default function HomePage() {
+interface WelcomePageProps {
+  user: {
+    id: number;
+    email: string;
+    role: string;
+  };
+  onLogout: () => void;
+}
+
+export default function WelcomePage({ user, onLogout }: WelcomePageProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  // Extract name from email (before @)
+  const userName = user.email.split('@')[0];
+  const userRole = user.role;
 
   return (
     <main className="min-h-screen bg-[#FAF6EF] flex flex-col text-[#1a1a1a] relative">
+      {/* NAVBAR WITH LOGOUT */}
+      <NavbarWithLogout onLogout={onLogout} userName={userName} />
       {/* ====== HERO SECTION ====== */}
       <section className="relative h-screen w-full">
         <Image
@@ -20,6 +36,19 @@ export default function HomePage() {
         />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+          {/* Welcome Message with Animation */}
+          <motion.div
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mb-4"
+          >
+            <h2 className="text-2xl lg:text-3xl font-bold text-white mb-2">
+              Hi, {userName}! [{userRole}]
+            </h2>
+            
+          </motion.div>
+
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -128,10 +157,21 @@ export default function HomePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.2 }}
-                  className="text-gray-700 text-base md:text-lg"
+                  className="text-gray-700 text-base md:text-lg mb-4"
                 >
                   Laboratorium Teknik Biomedika (Lab EB) adalah fasilitas inti di bawah Sekolah Teknik Elektro dan Informatika (STEI) Institut Teknologi Bandung (ITB) yang berperan penting dalam mendukung kegiatan akademik dan penelitian di Jurusan Teknik Biomedis.
                 </motion.p>
+                
+                {/* User Info Card */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 1.4 }}
+                  className="bg-white p-4 rounded-lg shadow-md border-l-4 border-[#E64A19]"
+                >
+                  <p className="text-sm text-gray-600 mb-1">Currently logged in as:</p>
+                  <p className="text-lg font-semibold text-[#E64A19]">{user.email}</p>
+                </motion.div>
               </motion.div>
               <motion.div 
                 initial={{ opacity: 0, x: 40 }}
