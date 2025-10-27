@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient, StatusPeminjamanAlat } from '@/app/generated/prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 // PUT - Update status peminjaman alat (untuk asisten)
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const body = await request.json();
     const { status, keterangan, approvedBy } = body;
-    const peminjamanId = parseInt(params.id);
+    const resolvedParams = await params;
+    const peminjamanId = parseInt(resolvedParams.id);
 
     if (!status) {
       return NextResponse.json(
@@ -32,13 +33,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     // Update status peminjaman
     const updatedData: {
-      status: StatusPeminjamanAlat;
+      status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'DIKEMBALIKAN';
       keterangan?: string | null;
       approvedBy?: string;
       approvedAt?: Date;
       dikembalikanAt?: Date;
     } = {
-      status: status as StatusPeminjamanAlat,
+      status: status as 'PENDING' | 'APPROVED' | 'REJECTED' | 'DIKEMBALIKAN',
       keterangan: keterangan || null
     };
 

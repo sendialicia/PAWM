@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient, StatusPeminjamanAlat } from '@/app/generated/prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 interface WhereClause {
   userId?: number;
-  status?: StatusPeminjamanAlat;
+  status?: 'PENDING' | 'APPROVED' | 'REJECTED' | 'DIKEMBALIKAN';
 }
 
 // GET - Ambil daftar peminjaman alat dengan filters
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     }
     
     if (status) {
-      whereClause.status = status as StatusPeminjamanAlat;
+      whereClause.status = status as 'PENDING' | 'APPROVED' | 'REJECTED' | 'DIKEMBALIKAN';
     }
 
     const peminjamanAlats = await prisma.peminjamanAlat.findMany({
